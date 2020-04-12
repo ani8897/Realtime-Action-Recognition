@@ -1,3 +1,4 @@
 action_frames/
 videos/
 compressed_action_frames/
+*.pyc
