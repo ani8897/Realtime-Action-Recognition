@@ -21,7 +21,7 @@ from utils import labels2cat, create_directory
 from dataset import Dataset_CRNN 
 from model import ResnetEncoder, DecoderRNN
 
-ROOT_DIR = "data/compressed_action_frames"    
+ROOT_DIR = "data/compressed_action_frames-60"    
 CHECKPOINT_DIR = "checkpoints/"
 create_directory(CHECKPOINT_DIR)
 

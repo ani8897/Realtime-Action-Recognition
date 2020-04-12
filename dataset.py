@@ -17,7 +17,7 @@ class Dataset_CRNN(data.Dataset):
 
 	def read_images(self, selected_folder):
 		X = []
-		for i in range(1,len(os.listdir(os.path.join(self.data_path, selected_folder)))+1):
+		for i in range(1,61):
 			image = Image.open(os.path.join(self.data_path, selected_folder, '%d.jpg'%i))
 
 			if self.transform is not None:

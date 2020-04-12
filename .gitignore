@@ -1,4 +1,7 @@
 action_frames/
 videos/
-compressed_action_frames/
+compressed_action_frames*
 *.pyc
+*.out
+.ipynb_checkpoints
+*.zip
