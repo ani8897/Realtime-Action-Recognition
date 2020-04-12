@@ -3,7 +3,7 @@ import cv2
 import pandas as pd
 
 annotations_df = pd.read_csv('scoringproject_9_NOR.csv')
-VIDEO_DIR = 'videos'
+VIDEO_DIR = '../thesis/Edge-CV/dilger/keypoints/data/videos'
 video_files = os.listdir(VIDEO_DIR)
 
 def create_dir(dir_name):
@@ -18,7 +18,7 @@ create_dir(FRAMES_DIR)
 
 ## Go over all the videos in the folder
 for vf in video_files:
-	video_name = vf.split('.')[0]
+	video_name = vf.split('/')[-1].split('.')[0]
 	video_stream = cv2.VideoCapture('%s/%s.mp4'%(VIDEO_DIR, video_name))
 
 	## Create directory to store all frames per video
@@ -32,7 +32,7 @@ for vf in video_files:
 
 	start_frame, end_frame = int(actions_df.iloc[0]['Start_Frame']), int(actions_df.iloc[0]['Start_Frame'])
 	[video_stream.read() for _ in range(start_frame)]
-	actions_df = actions_df.drop(0)
+	actions_df = actions_df.iloc[1:]
 
 	## Start annotating actions
 	explore_count, investigate_count = 0, 0
