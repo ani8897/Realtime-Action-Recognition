@@ -5,3 +5,4 @@ compressed_action_frames*
 *.out
 .ipynb_checkpoints
 *.zip
+*.pth
