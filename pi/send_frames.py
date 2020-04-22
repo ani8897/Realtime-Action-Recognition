@@ -28,7 +28,7 @@ def send_frames(size, host_ip):
 	camera = PiCamera()
 	camera.resolution = size
 	camera.framerate = 30
-	camera.awb_mode = 'fluorescent'
+	camera.awb_mode = 'sunlight'
 	
 	raw_image = PiRGBArray(camera, size=size)
 	raw_image.truncate(0)
@@ -60,5 +60,5 @@ if __name__ == '__main__':
 	## Registering signal handler to exit the program gracefully
 	signal.signal(signal.SIGINT, signal_handler)
 
-	size = (640, 480)
+	size = (640, 640)
 	send_frames(size, args.host_ip)

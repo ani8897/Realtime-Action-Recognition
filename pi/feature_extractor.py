@@ -26,14 +26,20 @@ class FeatureExtractor():
 		self.execNet = plugin.load(network=net, num_requests=1)
 		print("[INFO] Model loaded successfully!")
 
+		self.mean = np.array([0.485, 0.456, 0.406])
+		self.std = np.array([0.229, 0.224, 0.225]) ## Effectively dividing by 255
+
 	def extract(self, frame):
 		"""
 		Return extracted features
 		"""
 		return self.execNet.infer({self.inputBlob: frame})
 
-	@staticmethod
-	def preprocess_frame(frame):
+	def preprocess_frame(self, frame):
+		frame = frame / 255.0
 		frame = cv2.resize(frame, (224, 224))
+		for i in range(3):
+			frame[:, :, i] = (frame[:, :, i] - self.mean[i])/self.std[i]
 		frame = np.transpose(frame, (2,0,1))
+		frame = frame.astype('float32')
 		return frame

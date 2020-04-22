@@ -50,7 +50,7 @@ def display_frame():
 
 	while not DONE:
 		byte_frame = MANAGER.emit()
-		time.sleep(6./30)  
+		time.sleep(9./30)  
 		yield (b'--frame\r\n'
 			   b'Content-Type: image/jpeg\r\n\r\n' + byte_frame + b'\r\n')
 
