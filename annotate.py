@@ -41,7 +41,7 @@ for video_p in video_list:
 
 			frame_buffer.append(frame)
 
-			if len(frame_buffer) == 30:				
+			if len(frame_buffer) == 60:				
 				processed_frames = extractor.preprocess_frames(frame_buffer)
 				prediction, score = action_detector.detect(extractor.extract(processed_frames))
 
@@ -49,7 +49,7 @@ for video_p in video_list:
 					cv2.putText(f,"%s: %f"%(prediction, score),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 					out.write(f)
 
-					cv2.imshow("Action Recognition model", frame)
+					# cv2.imshow("Action Recognition model", frame)
 
 				frame_buffer = []
 
