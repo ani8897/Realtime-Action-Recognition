@@ -1,3 +1,4 @@
+import os
 import cv2
 import torch
 import torchvision.transforms as transforms
@@ -33,5 +34,15 @@ class FeatureExtractorCPU():
 			## Downsample by a factor of 4
 			downsampled_frame = cv2.resize(cropped_frame, (0,0), fx=0.25, fy=0.25) 
 			frame_stack.append(self.transform(Image.fromarray(downsampled_frame)))
+
+		return torch.stack(frame_stack, dim=0).unsqueeze(0)
+
+	def load_frames(self, frames_dir):
+
+		frame_stack = []
+		for i in range(60):
+			frame = Image.open(os.path.join(frames_dir, '%d.jpg'%(i+1)))
+			frame = self.transform(frame)
+			frame_stack.append(frame)
 
 		return torch.stack(frame_stack, dim=0).unsqueeze(0)
