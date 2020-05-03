@@ -6,3 +6,5 @@ compressed_action_frames*
 .ipynb_checkpoints
 *.zip
 *.pth
+checkpoints*
+bak-compressed_action_frames-60-all/

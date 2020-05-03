@@ -19,7 +19,6 @@ class Dataset_CRNN(data.Dataset):
 		X = []
 		for i in range(1,61):
 			image = Image.open(os.path.join(self.data_path, selected_folder, '%d.jpg'%i))
-
 			if self.transform is not None:
 				image = self.transform(image)
 

@@ -21,30 +21,26 @@ from utils import labels2cat, create_directory
 from dataset import Dataset_CRNN 
 from model import ResnetEncoder, DecoderRNN
 
-ROOT_DIR = "data/compressed_action_frames-60"    
+ROOT_DIR = "data/compressed_action_frames-60-all"    
 CHECKPOINT_DIR = "checkpoints/"
 create_directory(CHECKPOINT_DIR)
 
 # EncoderCNN architecture
-CNN_FC1, CNN_FC2 = 1024, 768
+CNN_FC1, CNN_FC2 = 1024, 1024
 CNN_OUT = 512   
 RESNET_INPUT_SIZE = 224        
 DROPOUT = 0.0       # dropout probability
 
 # DecoderRNN architecture
 RNN_HIDDEN_LAYERS = 3
-RNN_HIDDEN_NODES = 512
-RNN_FC = 256
+RNN_HIDDEN_NODES = 64
+RNN_FC = 16
 
 # training parameters
 epochs = 30       # training epochs
-batch_size = 40  
-LEARNING_RATE = 1e-3
+batch_size = 128
+LEARNING_RATE = 1e-4
 log_interval = 1   # interval for displaying training info
-
-# Select which frame to begin & end in videos
-begin_frame, end_frame, skip_frame = 1, 29, 1
-
 
 def train(log_interval, model, device, train_loader, optimizer, epoch):    
 	
@@ -60,7 +56,7 @@ def train(log_interval, model, device, train_loader, optimizer, epoch):
 		# distribute data to device
 		X, y = X.to(device), y.to(device).view(-1, )        
 		total_samples += X.size(0)
-
+                
 		optimizer.zero_grad()
 		output = rnn_decoder(cnn_encoder(X))   # output = (batch size, number of classes)
 
@@ -120,9 +116,9 @@ def validation(model, device, optimizer, test_loader):
 	print('\nTest set ({:d} samples): Average loss: {:.4f}, Accuracy: {:.2f}%\n'.format(len(all_y), test_loss, 100* test_score))
 
 	# save Pytorch models of best record
-	torch.save(cnn_encoder.state_dict(), os.path.join(save_model_path, 'cnn_encoder_epoch{}.pth'.format(epoch + 1)))  # save spatial_encoder
-	torch.save(rnn_decoder.state_dict(), os.path.join(save_model_path, 'rnn_decoder_epoch{}.pth'.format(epoch + 1)))  # save motion_encoder
-	torch.save(optimizer.state_dict(), os.path.join(save_model_path, 'optimizer_epoch{}.pth'.format(epoch + 1)))      # save optimizer
+	torch.save(cnn_encoder.state_dict(), os.path.join(CHECKPOINT_DIR, 'cnn_encoder_epoch{}.pth'.format(epoch + 1)))  # save spatial_encoder
+	torch.save(rnn_decoder.state_dict(), os.path.join(CHECKPOINT_DIR, 'rnn_decoder_epoch{}.pth'.format(epoch + 1)))  # save motion_encoder
+	torch.save(optimizer.state_dict(), os.path.join(CHECKPOINT_DIR, 'optimizer_epoch{}.pth'.format(epoch + 1)))      # save optimizer
 	print("Epoch {} model saved!".format(epoch + 1))
 
 	return test_loss, test_score
@@ -194,7 +190,7 @@ if __name__ == '__main__':
 	## Initialize model
 	cnn_encoder = ResnetEncoder(fc1_=CNN_FC1, fc2_=CNN_FC2, dropout=DROPOUT, CNN_out=CNN_OUT).to(device)
 	rnn_decoder = DecoderRNN(CNN_out=CNN_OUT, h_RNN_layers=RNN_HIDDEN_LAYERS, h_RNN=RNN_HIDDEN_NODES, 
-							 h_FC_dim=RNN_FC, dropout=DROPOUT, num_classes=len(list(label_encoder.classes_))).to(device)
+							 h_FC_dim=RNN_FC, dropout=DROPOUT, num_classes=2).to(device)
 
 	# Parallelize model to multiple GPUs
 	if torch.cuda.device_count() > 1:

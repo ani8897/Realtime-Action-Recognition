@@ -41,7 +41,6 @@ class FeatureExtractorCPU():
 			downsampled_frame = cv2.resize(cropped_frame, (0,0), fx=0.25, fy=0.25) 
 
 			frame = cv2.resize(downsampled_frame, (224, 224))
-			cv2.imshow("Downsampled frame", frame)
 
 			frame = frame.astype('float32')
 
