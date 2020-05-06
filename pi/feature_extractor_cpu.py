@@ -19,7 +19,7 @@ class FeatureExtractorCPU():
 		self.std = [0.229, 0.224, 0.225]
 
 		self.transform = transforms.Compose([
-						# transforms.Resize([224, 224]),
+						transforms.Resize([224, 224]),
 						transforms.ToTensor(),
 						transforms.Normalize(mean=self.mean, std=self.std)])
 
@@ -34,20 +34,14 @@ class FeatureExtractorCPU():
 		frame_stack = []
 		for f in frame_buffer:
 			h, w, _ = f.shape
-			f = f / 255.0
 			## Crop the frame
 			cropped_frame = f[Y_CROP:h-Y_CROP, X_CROP:w-X_CROP]
+			
 			## Downsample by a factor of 4
 			downsampled_frame = cv2.resize(cropped_frame, (0,0), fx=0.25, fy=0.25) 
 
-			frame = cv2.resize(downsampled_frame, (224, 224))
-
-			frame = frame.astype('float32')
-
-			frame_stack.append(self.transform(frame))
-		
-			# frame_stack.append(self.transform(Image.fromarray(np.uint8(downsampled_frame))))
-
+			## Convert to PIL Image
+			frame_stack.append(self.transform(Image.fromarray(cv2.cvtColor(downsampled_frame, cv2.COLOR_BGR2RGB))))
 		return torch.stack(frame_stack, dim=0).unsqueeze(0)
 
 	def load_frames(self, frames_dir):

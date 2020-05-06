@@ -5,6 +5,7 @@ from utils import cat2labels
 import torch
 import pickle
 import numpy as np
+import torch.nn.functional as F
 from sklearn.preprocessing import LabelEncoder
 
 class ActionDetector():
@@ -49,7 +50,7 @@ class PigActionDetector():
 		
 		with torch.no_grad():
 			output = self.model(cnn_embed_seq)
-			# y_pred = output.max(1, keepdim=True)[1]
+			output = F.softmax(output)
 			confidence, y_pred = output.topk(1, largest=True, sorted=True)
 
 			return cat2labels(self.le, y_pred[0].tolist())[0], confidence[0].tolist()[0]
