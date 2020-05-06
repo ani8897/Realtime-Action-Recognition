@@ -13,7 +13,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_recall_curve
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
@@ -26,7 +26,7 @@ CHECKPOINT_DIR = "checkpoints/"
 create_directory(CHECKPOINT_DIR)
 
 # training parameters
-epochs = 40     # training epochs
+epochs = 20     # training epochs
 batch_size = 128
 LEARNING_RATE = 1e-3
 log_interval = 1   # interval for displaying training info
@@ -101,7 +101,21 @@ def validation(model, device, optimizer, test_loader):
 	# compute accuracy
 	all_y = torch.stack(all_y, dim=0)
 	all_y_pred = torch.stack(all_y_pred, dim=0)
-	test_score = accuracy_score(all_y.cpu().data.squeeze().numpy(), all_y_pred.cpu().data.squeeze().numpy())
+	y_true, y_pred = all_y.cpu().data.squeeze().numpy(), all_y_pred.cpu().data.squeeze().numpy()
+	test_score = accuracy_score(y_true, y_pred)
+
+	## Plot precision recall
+	precision, recall, thresholds = precision_recall_curve(y_true, y_pred)
+	fig, ax=plt.subplots()
+	ax.step(recall, precision,color='r',alpha=0.99,where="post")
+	ax.fill_between(recall, precision, alpha=0.2, color='b', step="post")
+	plt.xlabel("Recall")
+	plt.ylabel("Precision")
+	plt.ylim([0.0, 1.05])
+	plt.xlim([0.0, 1.0])
+	# plt.title("2-class Precision-Recall curve: AP={0:0.2f}".format(average_precision))
+	plt.savefig('pr.png', dpi=600)
+	plt.close(fig)
 
 	# show information
 	print('\nTest set ({:d} samples): Average loss: {:.4f}, Accuracy: {:.2f}%\n'.format(len(all_y), test_loss, 100* test_score))

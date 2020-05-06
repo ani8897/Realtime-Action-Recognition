@@ -6,7 +6,7 @@ from tqdm import tqdm
 def create_directory(dir_name):
     try: 
         os.stat(dir_name)
-    except:
+    except: 
         os.mkdir(dir_name)
 
 ## ------------------- label conversion tools ------------------ ##
