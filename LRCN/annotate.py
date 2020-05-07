@@ -6,6 +6,8 @@ from app.detector import PigActionDetector
 from model import ResnetEncoder, DecoderRNN
 from pi.feature_extractor_cpu import FeatureExtractorCPU
 
+LOG = True
+
 ## Load CNN encoder
 cnn_encoder = ResnetEncoder(fc1_=1024, fc2_=1024, dropout=0.0, CNN_out=512)
 extractor = FeatureExtractorCPU(cnn_encoder, 'checkpoints-16/cnn_encoder_epoch21.pth')
@@ -26,10 +28,11 @@ for video_p in video_list:
 	video_path = os.path.join(base_dir, video_p)
 	video_stream = cv2.VideoCapture(video_path)
 
-	## Setup output video
-	fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-	video_name = video_path.split('/')[-1].split('.')[0]
-	out = cv2.VideoWriter(video_name+'-lrcn.mp4', fourcc, 30, (1920, 1080))
+	if not LOG:
+		## Setup output video
+		fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+		video_name = video_path.split('/')[-1].split('.')[0]
+		out = cv2.VideoWriter(video_name+'-lrcn.mp4', fourcc, 30, (1920, 1080))
 
 	frame_id, frame_buffer = 0, []
 	with torch.no_grad():
@@ -50,8 +53,11 @@ for video_p in video_list:
 				## Annotate 60 frames and write it out to the output file
 				for f in frame_buffer:
 					cv2.putText(f,"%s: %f"%(prediction, score),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
-					out.write(f)
+					if not LOG:
+						out.write(f)
 
+				if LOG:
+					print("%d %s %f"%(frame_id, prediction, score))
 				## Reset the buffer
 				frame_buffer = []
 
@@ -60,5 +66,6 @@ for video_p in video_list:
 			if key == ord("q"):
 				break
 
-	out.release()
+	if not LOG:
+		out.release()
 	cv2.destroyAllWindows()

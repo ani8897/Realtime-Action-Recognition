@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-log_file = 'logs/tsm-annotate.log'
+log_file = 'logs/lrcn-annotate.log'
 annotations_df = pd.read_csv('../data/action_annotation.csv')
 
 DEBUG = False
