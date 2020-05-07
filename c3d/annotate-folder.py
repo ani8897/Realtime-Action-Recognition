@@ -6,6 +6,8 @@ from model import BinaryClassifier
 from c3d_detector import C3D_detector
 from feature_extractor import FeatureExtractor
 
+LOG = True
+
 ## Load C3D feature extractor
 extractor = FeatureExtractor('c3d_sports1m.h5')
 
@@ -26,9 +28,10 @@ for video_p in video_list:
 	video_stream = cv2.VideoCapture(video_path)
 
 	## Setup output video
-	fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-	video_name = video_path.split('/')[-1].split('.')[0]
-	out = cv2.VideoWriter(video_name+'-c3d.mp4', fourcc, 30, (1920, 1080))
+	if not LOG:
+		fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+		video_name = video_path.split('/')[-1].split('.')[0]
+		out = cv2.VideoWriter(video_name+'-c3d.mp4', fourcc, 30, (1920, 1080))
 
 	frame_id, frame_buffer = 0, []
 	with torch.no_grad():
@@ -49,8 +52,11 @@ for video_p in video_list:
 				## Annotate 60 frames and write it out to the output file
 				for f in frame_buffer:
 					cv2.putText(f,"%s: %f"%(prediction, score),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
-					out.write(f)
+					if not LOG:
+						out.write(f)
 
+				if LOG:
+					print("%d %s %f"%(frame_id, prediction, score))
 				## Reset the buffer
 				frame_buffer = []
 
@@ -59,5 +65,6 @@ for video_p in video_list:
 			if key == ord("q"):
 				break
 
-	out.release()
+	if not LOG:
+		out.release()
 	cv2.destroyAllWindows()
