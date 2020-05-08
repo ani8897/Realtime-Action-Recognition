@@ -11,13 +11,13 @@ def return_pig(modality):
     filename_categories = 2
     if modality == 'RGB':
         root_data = ''
-        filename_imglist_train = '/home/aniket/Desktop/Livestock-Action-Recognition/data/train_list.txt'
-        filename_imglist_val = '/home/aniket/Desktop/Livestock-Action-Recognition/data/val_list.txt'
+        filename_imglist_train = '/home/aniket/Desktop/Livestock-Action-Recognition/data/tsm_train_list.txt'
+        filename_imglist_val = '/home/aniket/Desktop/Livestock-Action-Recognition/data/tsm_val_list.txt'
         prefix = 'img_{:05d}.jpg'
     elif modality == 'Flow':
         root_data = ''
-        filename_imglist_train = '/home/aniket/Desktop/Livestock-Action-Recognition/data/train_list.txt'
-        filename_imglist_val = '/home/aniket/Desktop/Livestock-Action-Recognition/data/val_list.txt'
+        filename_imglist_train = '/home/aniket/Desktop/Livestock-Action-Recognition/data/tsm_train_list.txt'
+        filename_imglist_val = '/home/aniket/Desktop/Livestock-Action-Recognition/data/tsm_val_list.txt'
         prefix = '{}_{:05d}.jpg'
     else:
         raise NotImplementedError('no such modality:' + modality)

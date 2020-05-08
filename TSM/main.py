@@ -304,7 +304,7 @@ def validate(val_loader, model, criterion, epoch, log=None, tf_writer=None):
             target = target.to(device)
 
             # compute output
-            print("In validate: ", input.size())
+            #print("In validate: ", input.size())
             output = model(input)
             loss = criterion(output, target)
 

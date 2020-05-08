@@ -13,7 +13,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_recall_curve
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
@@ -21,7 +21,7 @@ from utils import labels2cat, create_directory
 from dataset import Dataset_CRNN 
 from model import ResnetEncoder, DecoderRNN
 
-ROOT_DIR = "data/compressed_action_frames-60-all"    
+ROOT_DIR = "../data/compressed_action_frames-60-all"    
 CHECKPOINT_DIR = "checkpoints/"
 create_directory(CHECKPOINT_DIR)
 
@@ -110,7 +110,10 @@ def validation(model, device, optimizer, test_loader):
 	# compute accuracy
 	all_y = torch.stack(all_y, dim=0)
 	all_y_pred = torch.stack(all_y_pred, dim=0)
-	test_score = accuracy_score(all_y.cpu().data.squeeze().numpy(), all_y_pred.cpu().data.squeeze().numpy())
+	y_true, y_pred = all_y.cpu().data.squeeze().numpy(), all_y_pred.cpu().data.squeeze().numpy()
+	test_score = accuracy_score(y_true, y_pred)
+	precision, recall, threshold = precision_recall_curve(y_true, y_pred)
+	print(precision, recall, test_score)
 
 	# show information
 	print('\nTest set ({:d} samples): Average loss: {:.4f}, Accuracy: {:.2f}%\n'.format(len(all_y), test_loss, 100* test_score))
@@ -217,6 +220,12 @@ if __name__ == '__main__':
 
 	optimizer = torch.optim.Adam(crnn_params, lr=LEARNING_RATE)
 
+	validate = True
+	if validate:
+		cnn_encoder.load_state_dict(torch.load('../checkpoints-16/cnn_encoder_epoch21.pth'))
+		rnn_decoder.load_state_dict(torch.load('../checkpoints-16/rnn_decoder_epoch21.pth'))
+		validation([cnn_encoder, rnn_decoder], device, optimizer, valid_loader)
+		exit()
 
 	# record training process
 	epoch_train_losses = []

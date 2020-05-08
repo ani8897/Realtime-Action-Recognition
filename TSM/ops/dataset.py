@@ -198,16 +198,16 @@ class TSNDataSet(data.Dataset):
             segment_indices = self._sample_indices(record) if self.random_shift else self._get_val_indices(record)
         else:
             segment_indices = self._get_test_indices(record)
-        print("Segment Indices: ", segment_indices)
+        #print("Segment Indices: ", segment_indices)
         return self.get(record, segment_indices)
 
     def get(self, record, indices):
 
-        print("In get: ", self.new_length, self.num_segments)
+        #print("In get: ", self.new_length, self.num_segments)
         images = list()
         for seg_ind in indices:
             p = int(seg_ind)
-            print("  p:%d"%p)
+            #print("  p:%d"%p)
             for i in range(self.new_length):
                 seg_imgs = self._load_image(record.path, p)
                 images.extend(seg_imgs)
@@ -215,7 +215,7 @@ class TSNDataSet(data.Dataset):
                     p += 1
 
         process_data = self.transform(images)
-        print(process_data.size())
+        #print(process_data.size())
         return process_data, record.label
 
     def __len__(self):
