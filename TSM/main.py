@@ -20,6 +20,7 @@ from ops.utils import AverageMeter, accuracy
 from ops.temporal_shift import make_temporal_pool
 
 from tensorboardX import SummaryWriter
+from sklearn.metrics import accuracy_score, precision_recall_curve
 
 best_prec1 = 0
 
@@ -296,6 +297,7 @@ def validate(val_loader, model, criterion, epoch, log=None, tf_writer=None):
     # switch to evaluate mode
     model.eval()
 
+    all_y, all_y_pred = [], []
     end = time.time()
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
@@ -308,6 +310,7 @@ def validate(val_loader, model, criterion, epoch, log=None, tf_writer=None):
 
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
+            y_pred = output.max(1, keepdim=True)[1]
 
             losses.update(loss.item(), input.size(0))
             top1.update(prec1.item(), input.size(0))
@@ -316,6 +319,10 @@ def validate(val_loader, model, criterion, epoch, log=None, tf_writer=None):
             # measure elapsed time
             batch_time.update(time.time() - end)
             end = time.time()
+
+            # collect all y and y_pred in all batches
+            all_y.extend(target)
+            all_y_pred.extend(y_pred)
 
             if i % args.print_freq == 0:
                 output = ('Test: [{0}/{1}]\t'
@@ -329,6 +336,13 @@ def validate(val_loader, model, criterion, epoch, log=None, tf_writer=None):
                 if log is not None:
                     log.write(output + '\n')
                     log.flush()
+
+    all_y = torch.stack(all_y, dim=0)
+    all_y_pred = torch.stack(all_y_pred, dim=0)
+    y_true, y_pred = all_y.cpu().data.squeeze().numpy(), all_y_pred.cpu().data.squeeze().numpy()
+    test_score = accuracy_score(y_true, y_pred)
+    precision, recall, thresholds = precision_recall_curve(y_true, y_pred)
+    print(precision, recall, test_score)
 
     output = ('Testing Results: Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f} Loss {loss.avg:.5f}'
               .format(top1=top1, top5=top5, loss=losses))
