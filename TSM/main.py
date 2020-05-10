@@ -20,7 +20,7 @@ from ops.utils import AverageMeter, accuracy
 from ops.temporal_shift import make_temporal_pool
 
 from tensorboardX import SummaryWriter
-from sklearn.metrics import accuracy_score, precision_recall_curve
+from sklearn.metrics import accuracy_score, precision_recall_curve, average_precision_score
 
 best_prec1 = 0
 
@@ -342,7 +342,7 @@ def validate(val_loader, model, criterion, epoch, log=None, tf_writer=None):
     y_true, y_pred = all_y.cpu().data.squeeze().numpy(), all_y_pred.cpu().data.squeeze().numpy()
     test_score = accuracy_score(y_true, y_pred)
     precision, recall, thresholds = precision_recall_curve(y_true, y_pred)
-    print(precision, recall, test_score)
+    print(precision, recall, test_score, average_precision_score(y_true, y_pred))
 
     output = ('Testing Results: Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f} Loss {loss.avg:.5f}'
               .format(top1=top1, top5=top5, loss=losses))
