@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append('..')
 import cv2
 import torch
 
@@ -6,14 +8,22 @@ from app.detector import PigActionDetector
 from model import ResnetEncoder, DecoderRNN
 from pi.feature_extractor_cpu import FeatureExtractorCPU
 
+from ptflops import get_model_complexity_info
+
 LOG = True
 
 ## Load CNN encoder
 cnn_encoder = ResnetEncoder(fc1_=1024, fc2_=1024, dropout=0.0, CNN_out=512)
-extractor = FeatureExtractorCPU(cnn_encoder, '../checkpoints-16/cnn_encoder_epoch21.pth')
+macs, params = get_model_complexity_info(cnn_encoder, (60,3, 224, 224), as_strings=True, print_per_layer_stat=False, verbose=True)
+print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+# extractor = FeatureExtractorCPU(cnn_encoder, '../checkpoints-16/cnn_encoder_epoch21.pth')
 
 ## Load RNN decoder
 rnn_decoder = DecoderRNN(CNN_out=512, h_RNN_layers=3, h_RNN=64, h_FC_dim=16, dropout=0, num_classes=2)
+macs, params = get_model_complexity_info(rnn_decoder, (1, 512), as_strings=True, print_per_layer_stat=False, verbose=True)
+print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+print('{:<30}  {:<8}'.format('Number of parameters: ', params))
 action_detector = PigActionDetector(rnn_decoder, '../checkpoints-16/rnn_decoder_epoch21.pth')
 
 ## Obtain list of videos

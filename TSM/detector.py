@@ -7,6 +7,8 @@ from PIL import Image
 from ops.models import TSN
 from ops.transforms import *
 
+from ptflops import get_model_complexity_info
+
 X_CROP, Y_CROP = 350, 30
 
 class TSM_detector():
@@ -25,6 +27,11 @@ class TSM_detector():
 		            fc_lr5=False,
 		            temporal_pool=False,
 		            non_local=False)
+
+		macs, params = get_model_complexity_info(model, (24, 224, 224), as_strings=True,
+                                           print_per_layer_stat=False, verbose=True)
+		print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+		print('{:<30}  {:<8}'.format('Number of parameters: ', params))
 
 		## Define transforms
 		crop_size = model.crop_size

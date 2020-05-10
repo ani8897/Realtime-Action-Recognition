@@ -1,7 +1,9 @@
 import os
+import sys
 import pandas as pd
 
-log_file = 'logs/lrcn-annotate.log'
+model = sys.argv[1]
+log_file = 'logs/%s-annotate.log'%model
 annotations_df = pd.read_csv('../data/action_annotation.csv')
 
 DEBUG = False
@@ -69,7 +71,7 @@ def get_hits(p_interval, time_intervals):
 
 with open(log_file, 'r') as l:
 
-	total_true_hits, total_false_hits, total_gt_hits = 0, 0, 0
+	total_true_hits, total_false_hits, total_gt_hits, total_frame_count = 0, 0, 0, 0
 	video_name = l.readline().split('.')[0]
 	while True:
 		
@@ -77,7 +79,7 @@ with open(log_file, 'r') as l:
 		investigate_df = annotations_df[(annotations_df['Scoring'] == video_name) & (annotations_df['Behaviour'] == 'Investigating')]
 		time_intervals = [interval(int(r['Start_Frame']), int(r['Stop_Frame'])) for _, r in investigate_df.iterrows()]
 		## Iterate through the log and update true hits and false hits count at frame level
-		true_hits, false_hits, gt_hits = 0, 0, sum([t.length for t in time_intervals])
+		true_hits, false_hits, gt_hits, frame_count = 0, 0, sum([t.length for t in time_intervals]), int(annotations_df[(annotations_df['Scoring'] == video_name) & (annotations_df['Value'] == 'End')]['Start_Frame'])
 		data = l.readline().split()
 		while len(data) == 3:
 			frame_id, prediction = int(data[0]), data[1]
@@ -90,14 +92,16 @@ with open(log_file, 'r') as l:
 				true_hits += t; false_hits += f 
 
 			data = l.readline().split()
-		print("%s: %f (%d/%d) %f (%d/%d)"%(video_name, true_hits/gt_hits, true_hits, gt_hits, false_hits/gt_hits, false_hits, gt_hits))
+		# print("%s: %f (%d/%d) %f (%d/%d)"%(video_name, true_hits/gt_hits, true_hits, gt_hits, false_hits/(frame_count - gt_hits), false_hits, (frame_count - gt_hits)))
+		print("%s %f %f"%(video_name.split('_')[2], true_hits/gt_hits, false_hits/(frame_count - gt_hits)))
 		total_true_hits += true_hits
 		total_false_hits += false_hits
 		total_gt_hits += gt_hits
+		total_frame_count += frame_count
 
 		if len(data) > 1: 
 			break
 
 		video_name = data[0].split('.')[0]
 
-	print("Final: %f (%d/%d) %f (%d/%d)"%(total_true_hits/total_gt_hits, total_true_hits, total_gt_hits, total_false_hits/total_gt_hits, total_false_hits, total_gt_hits))
+	print("Final: %f (%d/%d) %f (%d/%d)"%(total_true_hits/total_gt_hits, total_true_hits, total_gt_hits, total_false_hits/(total_frame_count - total_gt_hits), total_false_hits, (total_frame_count - total_gt_hits)))

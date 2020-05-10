@@ -8,11 +8,11 @@ tsm_precision = [0.50089127, 0.9751773, 1.]
 tsm_recall = [1., 0.97864769, 0.]
 
 fig, ax=plt.subplots()
-ax.step(lrcn_recall, lrcn_precision,color='b',alpha=0.99,where="post",label="LRCN")
+ax.step(lrcn_recall, lrcn_precision,color='b',alpha=0.99,where="post",label="LRCN: 0.892")
 ax.fill_between(lrcn_recall, lrcn_precision, alpha=0.2, color='b', step="post")
-ax.step(c3d_recall, c3d_precision,color='r',alpha=0.99,where="post",label="C3D")
+ax.step(c3d_recall, c3d_precision,color='r',alpha=0.99,where="post",label="C3D: 0.944")
 ax.fill_between(c3d_recall, c3d_precision, alpha=0.2, color='r', step="post")
-ax.step(tsm_recall, tsm_precision,color='g',alpha=0.99,where="post",label="TSM")
+ax.step(tsm_recall, tsm_precision,color='g',alpha=0.99,where="post",label="TSM: 0.965")
 ax.fill_between(tsm_recall, tsm_precision, alpha=0.2, color='g', step="post")
 plt.xlabel("Recall")
 plt.ylabel("Precision")

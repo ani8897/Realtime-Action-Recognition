@@ -22,6 +22,7 @@ class FeatureExtractor():
 		c3d_model = C3D(weights_path)
 		layer_name = 'fc6'
 		self.model = Model(inputs=c3d_model.input, outputs=c3d_model.get_layer(layer_name).output)
+		print("Number of model parameters: %d"%self.model.count_params())
 
 	def extract(self, clip):
 		"""

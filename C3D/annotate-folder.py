@@ -9,7 +9,7 @@ from feature_extractor import FeatureExtractor
 LOG = True
 
 ## Load C3D feature extractor
-extractor = FeatureExtractor('c3d_sports1m.h5')
+# extractor = FeatureExtractor('c3d_sports1m.h5')
 
 ## Load Binary Classifier
 classifier = BinaryClassifier()
