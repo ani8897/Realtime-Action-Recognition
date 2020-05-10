@@ -13,7 +13,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import accuracy_score, precision_recall_curve
+from sklearn.metrics import accuracy_score, precision_recall_curve, average_precision_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
@@ -105,7 +105,7 @@ def validation(model, device, optimizer, test_loader):
 	test_score = accuracy_score(y_true, y_pred)
 
 	## Plot precision recall
-	precision, recall, thresholds = precision_recall_curve(y_true, y_pred);print(precision, recall, thresholds); fig, ax=plt.subplots()
+	precision, recall, thresholds = precision_recall_curve(y_true, y_pred);print(precision, recall, average_precision_score(y_true, y_pred)); fig, ax=plt.subplots()
 	ax.step(recall, precision,color='r',alpha=0.99,where="post")
 	ax.fill_between(recall, precision, alpha=0.2, color='b', step="post")
 	plt.xlabel("Recall")
