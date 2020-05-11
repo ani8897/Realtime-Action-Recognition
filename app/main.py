@@ -9,7 +9,7 @@ import signal
 import argparse
 import threading
 sys.path.append('/opt/imagezmq/imagezmq') 
-sys.path.append('..')
+sys.path.append('../LRCN')
 
 import cv2
 import imagezmq
