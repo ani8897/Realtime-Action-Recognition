@@ -1,4 +1,4 @@
-# Livestock-Action-Recognition
+# Realtime-Action-Recognition
 
 The video demonstration for the project can be found [here](https://youtu.be/eeVDUKJaNkg)
 
