@@ -1,3 +1,7 @@
+"""
+Contains Detector class which loads the TSM model
+"""
+
 import cv2
 import torch
 import torchvision
@@ -28,6 +32,7 @@ class TSM_detector():
 		            temporal_pool=False,
 		            non_local=False)
 
+		## Get Model complexity
 		macs, params = get_model_complexity_info(model, (24, 224, 224), as_strings=True,
                                            print_per_layer_stat=False, verbose=True)
 		print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
@@ -52,6 +57,7 @@ class TSM_detector():
 		self.model = model
 		self.model.eval()
 
+		## Frame samples to be selected in a clip
 		self.action_names = ['explore', 'investigate']
 		self.rgb_sample = [4, 12, 19, 26, 34, 41, 48, 56]
 

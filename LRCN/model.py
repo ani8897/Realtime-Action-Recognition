@@ -1,3 +1,7 @@
+"""
+Contains model architectures for LRCN
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

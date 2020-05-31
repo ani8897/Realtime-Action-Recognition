@@ -1,3 +1,7 @@
+"""
+Class to handle frames received from Raspberry Pi and apply action recognition model to it
+"""
+
 import cv2
 import time
 import torch
@@ -7,7 +11,6 @@ from queue import Queue
 CLIP_SIZE = 30
 
 class FrameManager():
-	"""docstring for FrameManager"""
 	def __init__(self, detector, debug=False):
 		self.detector = detector
 		self.debug = debug
@@ -25,7 +28,7 @@ class FrameManager():
 
 	def populate_emit_queue(self, prediction, probability):
 		"""
-		Assign prediction to each frame and insert cv2 frame into the emit queue
+		Assign action prediction to each frame and insert cv2 frame into the emit queue
 		"""
 
 		for frame in self.clip:
@@ -35,7 +38,7 @@ class FrameManager():
 
 	def predict_and_reset_clip(self):
 		"""
-		Predict anomaly for the bag and then reset it
+		Predict action for the clip and then reset it
 		"""
 		prediction, probability = self.detector.detect(self.feature_bag)
 		self.populate_emit_queue(prediction, probability)

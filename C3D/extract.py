@@ -1,3 +1,8 @@
+"""
+This script extracts C3D features for each clip in ROOT_DIR
+and stores them in a .npy file in FEATURES_DIR
+"""
+
 import os
 import numpy as np
 from feature_extractor import FeatureExtractor
@@ -12,7 +17,7 @@ ROOT_DIR = '../data/compressed_action_frames-60-all'
 FEATURES_DIR = '../data/c3d_features'
 create_dir(FEATURES_DIR)
 
-extractor = FeatureExtractor('c3d_sports1m.h5')
+extractor = FeatureExtractor('../checkpoints/c3d_sports1m.h5')
 
 for clip_name in os.listdir(ROOT_DIR):
 	print(clip_name)

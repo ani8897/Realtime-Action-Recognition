@@ -1,17 +1,22 @@
+"""
+Contains code to annotate all the videos in a specific folder using TSM
+"""
+
 import os
 import cv2
 import torch
 
 from detector import TSM_detector
 
+## Set LOG to false if you want to generate the annotated video
 LOG = True
 
 ## Load TSM detector
 modality = "RGB"
-detector = TSM_detector(modality, 'checkpoint/%s/ckpt.best.pth.tar'%modality.lower())
+detector = TSM_detector(modality, '../checkpoints/tsm.best.pth.tar')
 
 ## Obtain list of videos
-base_dir = '../../Livestock-Action-Recognition/data/videos/'
+base_dir = '../data/videos/'
 video_list = os.listdir(base_dir)
 print("Processing %d videos"%len(video_list))
 

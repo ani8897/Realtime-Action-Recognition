@@ -1,3 +1,7 @@
+"""
+Utility script to fix the frames per second of a video
+"""
+
 import cv2
 import argparse
 

@@ -1,3 +1,7 @@
+"""
+Contains class to extract C3D features given a clip
+"""
+
 import os
 import cv2
 import PIL
@@ -9,8 +13,8 @@ from keras.utils.data_utils import get_file
 
 from c3d import C3D
 
-C3D_MEAN_PATH = 'https://github.com/adamcasson/c3d/releases/download/v0.1/c3d_mean.npy'
 X_CROP, Y_CROP = 350, 30
+C3D_MEAN_PATH = 'https://github.com/adamcasson/c3d/releases/download/v0.1/c3d_mean.npy'
 
 class FeatureExtractor():
 	

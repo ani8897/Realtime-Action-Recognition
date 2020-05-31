@@ -1,16 +1,22 @@
+"""
+Contains class to extract Resnet features given a clip
+"""
+
 import os
 import cv2
 import torch
 import torchvision.transforms as transforms
 
-import numpy as np
 from PIL import Image
 
-X_CROP, Y_CROP = 350,30
+X_CROP, Y_CROP = 350, 30
 
-class FeatureExtractorCPU():
+class FeatureExtractor():
 	
 	def __init__(self, cnn_model, cnn_checkpoint):
+		"""
+		Initialize LRCN model
+		"""
 		cnn_model.load_state_dict(torch.load(cnn_checkpoint))
 		self.model = cnn_model
 		self.model.eval()

@@ -1,3 +1,7 @@
+"""
+Contains training loop for LRCN
+"""
+
 import os
 import numpy as np
 
@@ -13,13 +17,18 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import accuracy_score, precision_recall_curve, average_precision_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from sklearn.metrics import accuracy_score, precision_recall_curve, average_precision_score
 
-from utils import labels2cat, create_directory
 from dataset import Dataset_CRNN 
 from model import ResnetEncoder, DecoderRNN
+
+def create_directory(dir_name):
+	try: 
+		os.stat(dir_name)
+	except: 
+		os.mkdir(dir_name)
 
 ROOT_DIR = "../data/compressed_action_frames-60-all"    
 CHECKPOINT_DIR = "checkpoints/"
@@ -139,7 +148,7 @@ def get_data(root_dir, label_encoder):
 
 	# list all data files
 	all_X_list = all_names                  
-	all_y_list = labels2cat(label_encoder, actions)    
+	all_y_list = label_encoder.transform(actions)
 
 	return train_test_split(all_X_list, all_y_list, test_size=0.25, random_state=42)
 

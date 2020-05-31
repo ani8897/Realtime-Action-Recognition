@@ -1,3 +1,7 @@
+"""
+Contains code to annotate all the videos in a specific folder using the C3D+Binary Classifier model
+"""
+
 import os
 import cv2
 import torch
@@ -6,14 +10,15 @@ from model import BinaryClassifier
 from c3d_detector import C3D_detector
 from feature_extractor import FeatureExtractor
 
+## Set LOG to false if you want to generate the annotated video
 LOG = True
 
-## Load C3D feature extractor
-# extractor = FeatureExtractor('c3d_sports1m.h5')
+## Load C3D feature extractor trained on Sports 1M
+extractor = FeatureExtractor('../checkpoints/c3d_sports1m.h5')
 
-## Load Binary Classifier
+## Load pretrained Binary Classifier
 classifier = BinaryClassifier()
-detector = C3D_detector(classifier, checkpoint='checkpoints/model_epoch19.pth')
+detector = C3D_detector(classifier, checkpoint='../checkpoints/c3d-classifier.pth')
 
 ## Obtain list of videos
 BASE_DIR = '../data/videos/'
@@ -36,6 +41,7 @@ for video_p in video_list:
 	frame_id, frame_buffer = 0, []
 	with torch.no_grad():
 		while True:
+			## Read in a frame
 			ret, frame = video_stream.read()
 			if frame is None: break
 			height, width, _ = frame.shape

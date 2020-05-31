@@ -1,8 +1,11 @@
+"""
+Contains training loop for the Binary Classifier
+"""
+
 import os
 import numpy as np
 
 import torch
-import torch.nn as nn
 import torch.utils.data as data
 import torch.nn.functional as F
 
@@ -13,29 +16,35 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import accuracy_score, precision_recall_curve, average_precision_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from sklearn.metrics import accuracy_score, precision_recall_curve, average_precision_score
 
 from utils import labels2cat, create_directory
 from dataset import Dataset_C3D 
 from model import BinaryClassifier
 
-ROOT_DIR = "../data/c3d_features"    
-CHECKPOINT_DIR = "checkpoints/"
-create_directory(CHECKPOINT_DIR)
-
-# training parameters
+## Training parameters
 epochs = 20     # training epochs
 batch_size = 128
 LEARNING_RATE = 1e-3
 log_interval = 1   # interval for displaying training info
 
+def create_directory(dir_name):
+	try: 
+		os.stat(dir_name)
+	except: 
+		os.mkdir(dir_name)
+
+ROOT_DIR = "../data/c3d_features"    
+CHECKPOINT_DIR = "checkpoints/"
+create_directory(CHECKPOINT_DIR)
+
 def adjust_learning_rate(optimizer, epoch):
-    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
-    lr = LEARNING_RATE * (0.1 ** (epoch // 10))
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
+	"""Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
+	lr = LEARNING_RATE * (0.1 ** (epoch // 10))
+	for param_group in optimizer.param_groups:
+		param_group['lr'] = lr
 
 def train(log_interval, model, device, train_loader, optimizer, epoch):    
 	
@@ -49,7 +58,7 @@ def train(log_interval, model, device, train_loader, optimizer, epoch):
 		# distribute data to device
 		X, y = X.to(device), y.to(device).view(-1, )        
 		total_samples += X.size(0)
-                
+				
 		optimizer.zero_grad()
 		output = model(X)   # output = (batch size, number of classes)
 
@@ -105,7 +114,10 @@ def validation(model, device, optimizer, test_loader):
 	test_score = accuracy_score(y_true, y_pred)
 
 	## Plot precision recall
-	precision, recall, thresholds = precision_recall_curve(y_true, y_pred);print(precision, recall, average_precision_score(y_true, y_pred)); fig, ax=plt.subplots()
+	precision, recall, thresholds = precision_recall_curve(y_true, y_pred)
+	print(precision, recall, average_precision_score(y_true, y_pred))
+
+	fig, ax=plt.subplots()
 	ax.step(recall, precision,color='r',alpha=0.99,where="post")
 	ax.fill_between(recall, precision, alpha=0.2, color='b', step="post")
 	plt.xlabel("Recall")
@@ -138,7 +150,7 @@ def get_data(root_dir, label_encoder):
 
 	# list all data files
 	all_X_list = all_names                  
-	all_y_list = labels2cat(label_encoder, actions)    
+	all_y_list = label_encoder.transform(actions)
 
 	return train_test_split(all_X_list, all_y_list, test_size=0.25, random_state=42)
 

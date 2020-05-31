@@ -1,21 +1,23 @@
+"""
+Contains code to check the annotation for individual clips in the dataset
+"""
+
 import os
-import cv2
 import torch
 
-from app.detector import PigActionDetector
 from model import ResnetEncoder, DecoderRNN
-from pi.feature_extractor_cpu import FeatureExtractorCPU
-
+from action_detector import PigActionDetector
+from feature_extractor import FeatureExtractor
 
 ## Load CNN encoder
 cnn_encoder = ResnetEncoder(fc1_=1024, fc2_=1024, dropout=0.0, CNN_out=512)
-extractor = FeatureExtractorCPU(cnn_encoder, 'checkpoints-16/cnn_encoder_epoch21.pth')
+extractor = FeatureExtractor(cnn_encoder, '../checkpoints/cnn-pig.pth')
 
 ## Load RNN decoder
 rnn_decoder = DecoderRNN(CNN_out=512, h_RNN_layers=3, h_RNN=64, h_FC_dim=16, dropout=0, num_classes=2)
-action_detector = PigActionDetector(rnn_decoder, 'checkpoints-16/rnn_decoder_epoch21.pth')
+action_detector = PigActionDetector(rnn_decoder, '../checkpoints/rnn-pig.pth')
 
-ROOT_DIR = 'data/compressed_action_frames-60-all/'
+ROOT_DIR = '../data/compressed_action_frames-60-all/'
 
 with torch.no_grad():
 

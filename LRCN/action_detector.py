@@ -4,11 +4,10 @@ passes the aggregated CNN features through it to predict an action
 """
 
 import torch
-import pickle
 import torch.nn.functional as F
 from sklearn.preprocessing import LabelEncoder
 
-class ActionDetector():
+class PigActionDetector():
 
 	def __init__(self, rnn_model, rnn_checkpoint):
 		"""
@@ -19,27 +18,24 @@ class ActionDetector():
 		rnn_model.load_state_dict(torch.load(rnn_checkpoint))
 		self.model = rnn_model
 		## Never forget to set the model in eval mode, else BatchNorm creates a problem
-		self.model.eval()  
-
+		self.model.eval()
+		
 		## Convert categories to labels
-		with open('../resources/UCF101actions.pkl', 'rb') as f:
-		    action_names = pickle.load(f)   # load UCF101 actions names
+		action_names = ['explore', 'investigate']
 
 		self.le = LabelEncoder()
 		self.le.fit(action_names)
 
-	def detect(self, feature_bag):
+	def detect(self, cnn_embed_seq):
 		"""
-		Stack the CNN features and pass through the RNN
+		Pass the CNN embedded sequence through the RNN
 		"""
-		cnn_embed_seq = torch.stack(feature_bag, dim=0).unsqueeze(0) ## Append batch dimension
-		
 		with torch.no_grad():
 			output = self.model(cnn_embed_seq)
-			# y_pred = output.max(1, keepdim=True)[1] ## To output the max label
-			confidence, y_pred = output.topk(5, largest=True, sorted=True)
-			print(y_pred, confidence)
-			return self.cat2labels(y_pred[0].tolist()), confidence[0].tolist()
+			output = F.softmax(output)
+			confidence, y_pred = output.topk(1, largest=True, sorted=True)
+
+			return self.cat2labels(y_pred[0].tolist())[0], confidence[0].tolist()[0]
 
 	@staticmethod
 	def cat2labels(y_cat):
@@ -47,4 +43,3 @@ class ActionDetector():
 		Static method to convert categories to labels
 		"""
 		return self.le.inverse_transform(y_cat).tolist()
-	

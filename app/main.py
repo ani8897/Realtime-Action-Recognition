@@ -5,24 +5,16 @@ Main file containing primary logic to process frames and display as a web applic
 ## Install imagezmq from https://github.com/jeffbass/imagezmq
 import os
 import sys
+import time
+import socket
 import signal
-import argparse
 import threading
 sys.path.append('/opt/imagezmq/imagezmq') 
 sys.path.append('../LRCN')
 
-import cv2
 import imagezmq
-
-import sys
-import time
-import struct
-import socket
-
-from multiprocessing import Lock, Process
-
-from detector import ActionDetector
 from manager import FrameManager
+from detector import ActionDetector
 
 from flask import Flask, render_template, Response
 
@@ -30,7 +22,6 @@ app = Flask("Action Recognition Dashboard")
 
 ## Frame Manager
 MANAGER = None
-LOCK = Lock()
 DONE = False
 
 def signal_handler(sig, frame):
@@ -40,7 +31,7 @@ def signal_handler(sig, frame):
 
 @app.route('/')
 def index():
-	return render_template('index.html', layout_image=os.path.join('static', 'me.jpg'))
+	return render_template('index.html')
 
 def display_frame():
 	"""
@@ -73,10 +64,15 @@ def consume_frames():
 
 	IMAGE_HUB = imagezmq.ImageHub()
 	while not DONE:
+		## Receive frame
 		rpi_name, frame = IMAGE_HUB.recv_image()
 		IMAGE_HUB.send_reply(b'OK')
+		
+		## Receive CNN features
 		rpi_name, features = IMAGE_HUB.recv_image()
 		IMAGE_HUB.send_reply(b'OK')
+
+		## Frame manager consumes the frame for further processing
 		MANAGER.consume(frame, features)
 
 if __name__ == '__main__':
@@ -84,7 +80,7 @@ if __name__ == '__main__':
 	## Initialize frame manager
 	from model import DecoderRNN
 	rnn_decoder = DecoderRNN(CNN_out=512, h_RNN_layers=3, h_RNN=512, h_FC_dim=256, dropout=0, num_classes=101)
-	action_detector = ActionDetector(rnn_decoder,'../checkpoints/rnn_decoder_epoch28.pth')
+	action_detector = ActionDetector(rnn_decoder,'../checkpoints/rnn-ucf101.pth')
 	MANAGER = FrameManager(detector=action_detector)
 
 	## Registering signal handler to exit the program gracefully
