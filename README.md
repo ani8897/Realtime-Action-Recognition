@@ -1,5 +1,9 @@
 # Livestock-Action-Recognition
 
+The video demonstration for the project can be found [here](https://youtu.be/eeVDUKJaNkg)
+
+<img src="results/result.gif" width="400"></img>
+
 This repo is divided into nine directories:
 1. ``app``: Contains Flask application used for real-time web application
 2. ``pi``: Contains code for communicating frames and extracting CNN features from Intel's Neural Compute Stick
@@ -11,11 +15,16 @@ This repo is divided into nine directories:
 8. ``C3D``: Contains training and annotation code for C3D
 9. ``TSM``: Contains training and annotation code for TSM
 
-
 ## Dataset
 
 Download the dataset and the annotations from [this](https://uofi.box.com/s/1tihqo6sxwh1f0g6413rw12ij0o8tnk0) box link and place under the ``data`` folder. 
 Use the scripts [extract_frames.py](data/extract_frames.py) and [downsample.py](data/downsample.py) to generate the annotation frames from the dataset.
+
+## Model Weights
+
+Download the ``checkpoints`` folder from [here](https://drive.google.com/drive/folders/1o30bqJo_OPxwVgMH_ChI2iN7sLvJo83l?usp=sharing) to reproduce our results.
+
+To run our action recognition model on Intel's Movidius stick, download the pretrained binaries folder``ncs_models`` folder from [here](https://drive.google.com/drive/folders/1o30bqJo_OPxwVgMH_ChI2iN7sLvJo83l?usp=sharing) and place it inside the ``ncs`` folder.
 
 ## LRCN 
 
