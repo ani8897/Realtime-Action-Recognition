@@ -1,3 +1,7 @@
+"""
+Contains CNN feature extraction class using Intel's NCS 
+"""
+
 import cv2
 import numpy as np
 
@@ -36,6 +40,7 @@ class FeatureExtractor():
 		return self.execNet.infer({self.inputBlob: frame})
 
 	def preprocess_frame(self, frame):
+		frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) ## Convert frame from BGR to RGB
 		frame = frame / 255.0
 		frame = cv2.resize(frame, (224, 224))
 		for i in range(3):
