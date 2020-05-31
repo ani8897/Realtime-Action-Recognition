@@ -22,7 +22,7 @@ class ActionDetector():
 		self.model.eval()  
 
 		## Convert categories to labels
-		with open('../resources/UCF101actions.pkl', 'rb') as f:
+		with open('resources/UCF101actions.pkl', 'rb') as f:
 		    action_names = pickle.load(f)   # load UCF101 actions names
 
 		self.le = LabelEncoder()
@@ -41,8 +41,7 @@ class ActionDetector():
 			print(y_pred, confidence)
 			return self.cat2labels(y_pred[0].tolist()), confidence[0].tolist()
 
-	@staticmethod
-	def cat2labels(y_cat):
+	def cat2labels(self, y_cat):
 		"""
 		Static method to convert categories to labels
 		"""

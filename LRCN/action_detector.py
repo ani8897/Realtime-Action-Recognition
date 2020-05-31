@@ -37,8 +37,7 @@ class PigActionDetector():
 
 			return self.cat2labels(y_pred[0].tolist())[0], confidence[0].tolist()[0]
 
-	@staticmethod
-	def cat2labels(y_cat):
+	def cat2labels(self, y_cat):
 		"""
 		Static method to convert categories to labels
 		"""

@@ -1,1 +1,1 @@
-from .action_detector import ActionDetector, PigActionDetector
+from .action_detector import ActionDetector
